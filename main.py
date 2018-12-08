@@ -25,7 +25,7 @@ def preProcess(item):
     stops.append('\n')
     stops.append('\n\n')
 
-    terms = [t for t in jieba.cut(item,cut_all=True) if t not in stops]
+    terms = [t.lower() for t in jieba.cut(item,cut_all=True) if t not in stops]
     all_terms.extend(terms)
     return terms
 
@@ -54,14 +54,15 @@ def cosine_similarity(v1,v2):
     return np.dot(v1,v2) / (norm(v1) * norm(v2))
 
 def lookup(sentence,numOfReturn=5):
-    tVector = terms_to_vector(preProcess(sentence))
+    testing_vector = terms_to_vector(preProcess(sentence))  
     score_dict = {}
     for idx, vec in enumerate(df_question['vector']):
-        score = cosine_similarity(tVector,vec)
+        score = cosine_similarity(testing_vector, vec)
         score_dict[idx] = score
-    idxs = np.array(sorted(score_dict.items, key=lambda x:x[1], reverse=True))[:numOfReturn, 0]
-    return df_question.loc[idxs,['question','ans']]
-
+    target = sorted(score_dict.items(), key=lambda x:x[1], reverse=True)
+    print(target)
+    idxs = np.array(target)[:numOfReturn, 0]
+    return df_question.loc[idxs, ['question', 'ans']]
 
 
 df_question['processed'] = df_question['question'].apply(preProcess)
@@ -92,18 +93,21 @@ df_question['vector'] = df_question['processed'].apply(terms_to_vector)
 # showWordCloud(termIndex)
 
 #%%
-# s1 = df_question.loc[23]
-# s2 = df_question.loc[24]
-# print(s1['question'],'和',s2['question'],'的相識度: ',cosine_similarity(s1['vector'],s2['vector']))
+s1 = df_question.loc[23]
+s2 = df_question.loc[24]
+print(s1['question'],'和',s2['question'],'的相識度: ',cosine_similarity(s1['vector'],s2['vector']))
 
 
 #%%
-# print(norm(df_question.loc[23]['vector']))
-# print(norm(df_question.loc[24]['vector']))
+print(norm(df_question.loc[23]['vector']))
+print(norm(df_question.loc[24]['vector']))
 
 #%%
-# df_question
+df_question
 
 #%%
-query = input('您的問題是?')
-lookup(query)
+# print('測試'.lower())
+lookup('請問Excel要怎樣設定自動存擋')
+# query = input('您的問題是?')
+# lookup(query)
+
