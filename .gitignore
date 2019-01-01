@@ -1,2 +1,9 @@
 .ipynb_checkpoints
 .vscode/settings.json
+*.dict
+*.index
+*.model
+*.lsi
+*.mm
+*.projection
+*.npy

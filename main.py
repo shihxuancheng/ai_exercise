@@ -59,10 +59,9 @@ def lookup(sentence,numOfReturn=5):
     for idx, vec in enumerate(df_question['vector']):
         score = cosine_similarity(testing_vector, vec)
         score_dict[idx] = score
-    target = sorted(score_dict.items(), key=lambda x:x[1], reverse=True)
-    print(target)
-    idxs = np.array(target)[:numOfReturn, 0]
-    return df_question.loc[idxs, ['question', 'ans']]
+    idxs = np.array(sorted(score_dict.items(), key=lambda x:x[1], reverse=True))[:numOfReturn, 0]
+    return df_question.loc[idxs,['question','ans']]
+
 
 
 df_question['processed'] = df_question['question'].apply(preProcess)
@@ -106,8 +105,6 @@ print(norm(df_question.loc[24]['vector']))
 df_question
 
 #%%
-# print('測試'.lower())
-lookup('請問Excel要怎樣設定自動存擋')
+query = '請問要申請WDAMS107可以找誰?'
 # query = input('您的問題是?')
-# lookup(query)
-
+lookup(query)
