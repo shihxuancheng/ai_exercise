@@ -29,20 +29,20 @@ def preProcess(item):
 def get_dataset():
     x_train = []
     for i,text in enumerate(df_question['question']):
-        word_list = ' '.join(jieba.cut(text)).encode('utf-8').split(' ')
+        word_list = ' '.join(jieba.cut(text)).split(' ')
         l = len(word_list)
         word_list[l - 1] = word_list[l - 1].strip()
         document = TaggedDocument(word_list, tags=[i])
         x_train.append(document)
     return x_train
 
-def train(x_train,epochs=100):
+def train(x_train,epochs=200):
     # PV-DM w/concatenation - window=5 (both sides) approximates paper's 10-word total window size
-    model = gensim.models.Doc2Vec(x_train,dm=1, size=100, window=2,hs=0, min_count=1)
+    # model = gensim.models.Doc2Vec(x_train,dm=1, size=100, window=5,hs=0, min_count=2)
     # PV-DBOW  
-    # model = gensim.models.Doc2Vec(docs,dm=0, size=100, hs=0, min_count=2)
+    # model = gensim.models.Doc2Vec(x_train,dm=0, size=100,window=5, hs=0, min_count=2)
     # PV-DM w/average
-    # model = gensim.models.Doc2Vec(docs,dm=1, dm_mean=1, size=100, window=2, hs=0, min_count=2)
+    model = gensim.models.Doc2Vec(x_train,dm=1, dm_mean=1, size=100, window=2, hs=0, min_count=2)
 
     model.train(x_train,total_examples=model.corpus_count,epochs=epochs)
 
@@ -52,7 +52,7 @@ def train(x_train,epochs=100):
 
 def eval():
     model_dm = gensim.models.Doc2Vec.load('doc2vec/doc2vec.model')
-    test_text = ['請問要申請WDAMS107可以找誰']
+    test_text = [u'請問要申請程式該怎麼做?']
     inferred_vector_dm = model_dm.infer_vector(test_text)
     print(inferred_vector_dm)
     sims = model_dm.docvecs.most_similar([inferred_vector_dm], topn=5)
@@ -69,8 +69,8 @@ if __name__ == '__main__':
         sentence = x_train[count]
         words = ''
         for word in sentence[0]:
-            words = words + word + ' '
-        print(words, sim, len(sentence[0]))
+            words = words + word + ''
+        print(words, sim, len(sentence[0]),'\n')
 
 
 

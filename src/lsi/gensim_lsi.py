@@ -7,7 +7,7 @@ import jieba
 import pandas as pd
 from gensim import corpora, models, similarities
 from collections import defaultdict
-
+jieba.set_dictionary('resources/dict.txt.big')
 df_qa = pd.read_json('raw_data.json',encoding='utf8')
 df_question = df_qa[['question','ans']].copy()
 df_question.drop_duplicates(inplace=True)
@@ -105,3 +105,9 @@ for i,line in enumerate(df_question['question'].values):
 for ans in sims[:5]:
     print("\n相似問題：",  answers[ans[0]])
     print("相似度：", ans[1])
+
+def main():
+    print('Main function')
+
+if __name__ == "__main__":
+	main()

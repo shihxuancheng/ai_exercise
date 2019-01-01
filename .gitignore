@@ -1,5 +1,4 @@
 .ipynb_checkpoints
-.vscode/settings.json
 *.dict
 *.index
 *.model
@@ -7,3 +6,5 @@
 *.mm
 *.projection
 *.npy
+*.vscode
+.DS_Store

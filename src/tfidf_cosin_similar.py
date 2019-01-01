@@ -63,8 +63,7 @@ def lookup(sentence,numOfReturn=5):
     return df_question.loc[idxs,['question','ans']]
 
 
-
-df_question['processed'] = df_question['question'].apply(preProcess)
+# df_question['processed'] = df_question['question'].apply(preProcess)
 # df_question
 
 termIndex = list(set(all_terms))
@@ -89,22 +88,25 @@ for term in termIndex:
 
 df_question['vector'] = df_question['processed'].apply(terms_to_vector)
 
-# showWordCloud(termIndex)
 
 #%%
-s1 = df_question.loc[23]
-s2 = df_question.loc[24]
-print(s1['question'],'和',s2['question'],'的相識度: ',cosine_similarity(s1['vector'],s2['vector']))
-
-
-#%%
-print(norm(df_question.loc[23]['vector']))
-print(norm(df_question.loc[24]['vector']))
-
-#%%
-df_question
-
-#%%
-query = '請問要申請WDAMS107可以找誰?'
+query = u'請問要申請程式該怎麼做?'
 # query = input('您的問題是?')
 lookup(query)
+
+
+
+def main():
+	while True:
+            print('請輸入您的問題:')
+            try:
+                query = input()
+                # print('請輸入您的問題:')
+                print('問題是: ',query)
+                print("----------------------------")
+            except Exception as e:
+                print(repr(e))
+
+
+if __name__ == "__main__":
+	main()
