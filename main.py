@@ -59,7 +59,7 @@ def lookup(sentence,numOfReturn=5):
     for idx, vec in enumerate(df_question['vector']):
         score = cosine_similarity(tVector,vec)
         score_dict[idx] = score
-    idxs = np.array(sorted(score_dict.items, key=lambda x:x[1], reverse=True))[:numOfReturn, 0]
+    idxs = np.array(sorted(score_dict.items(), key=lambda x:x[1], reverse=True))[:numOfReturn, 0]
     return df_question.loc[idxs,['question','ans']]
 
 
@@ -105,5 +105,6 @@ df_question['vector'] = df_question['processed'].apply(terms_to_vector)
 # df_question
 
 #%%
-query = input('您的問題是?')
+query = '請問要申請WDAMS107可以找誰?'
+# query = input('您的問題是?')
 lookup(query)
