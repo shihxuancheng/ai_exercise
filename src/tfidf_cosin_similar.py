@@ -1,112 +1,105 @@
 #%%
 #%matplotlib inline
-# import os
-import jieba
+import sys
+from os.path import abspath, join, dirname
+sys.path.insert(0, join(abspath(dirname(".")), 'src'))
+
+import dataset_utils as dUtil
 import numpy as np
 import pandas as pd
 from numpy.linalg import norm
-from wordcloud import WordCloud
-from matplotlib import pyplot as plt
-import json
 from collections import Counter
 
-jieba.set_dictionary('resources/dict.txt.big')
-
-df_qa = pd.read_json('raw_data.json',encoding='utf8')
-df_question = df_qa[['question','ans']].copy()
-df_question.drop_duplicates(inplace=True)
-# df_question
 
 all_terms = []
-def preProcess(item):
-    #停用字
-    with open('resources/stops.txt','r',encoding='utf8') as f:
-        stops = f.read().split('\n')
-    stops.append('\n')
-    stops.append('\n\n')
+idfVector = []
 
-    terms = [t.lower() for t in jieba.cut(item,cut_all=True) if t not in stops]
-    all_terms.extend(terms)
-    return terms
+#資料預處理
+def preProcess(df_qa):
+    global all_terms, idfVector
+    all_terms.clear()
+    idfVector.clear()
 
-# 轉換成TF-IDF vector
+    df_qa['processed'] = df_qa['question'].apply(sentence_to_words)
+
+    for words in df_qa['processed']:     
+        all_terms.extend(words)
+
+    all_terms = list(set(all_terms))
+
+    for term in all_terms:
+        docLen = len(df_qa)
+        numOfDoc = 0
+        for terms in df_qa['processed']:
+            if term in terms:
+                numOfDoc+=1
+
+        idf = np.log(docLen / numOfDoc)
+        idfVector.append(idf)
+
+    df_qa['vector'] = df_qa['processed'].apply(terms_to_vector)
+    
+#句詞轉換    
+def sentence_to_words(sentence):
+    words = dUtil.cut_sentence(sentence,cut_all=True)
+    return words
+
+# 轉換成BOW vector
 def terms_to_vector(terms):
-    vector = np.zeros_like(termIndex,dtype=np.dtype(float))
+    #TF轉換成BOW(詞袋)
+    vector = np.zeros_like(all_terms,dtype=np.dtype(float))
     for term in terms:
-        if term in termIndex:
-            idx = termIndex.index(term)
+        if term in all_terms:
+            idx = all_terms.index(term)
             vector[idx] += 1
+    # TF * IDF        
     vector = vector * idfVector
+
     return vector
-
-
-#產生文字雲
-def showWordCloud(termList):
-    wordcloud = WordCloud(background_color="white",font_path="resources/simsun.ttf",margin=2)
-    wordcloud.generate_from_frequencies(frequencies=Counter(termList))
-    plt.figure(figsize=(15,15))
-    plt.imshow(wordcloud, interpolation="bilinear")
-    plt.axis("off")
-    plt.show()   
+ 
 
 # 餘弦相似性計算
 def cosine_similarity(v1,v2):
     return np.dot(v1,v2) / (norm(v1) * norm(v2))
 
+# 比對相似性並回傳最佳答案
 def lookup(sentence,numOfReturn=5):
-    testing_vector = terms_to_vector(preProcess(sentence))  
+    test_vec = terms_to_vector(sentence_to_words(sentence))  
     score_dict = {}
-    for idx, vec in enumerate(df_question['vector']):
-        score = cosine_similarity(testing_vector, vec)
+    for idx, vec in enumerate(df_qa['vector']):
+        score = cosine_similarity(test_vec, vec)
         score_dict[idx] = score
-    idxs = np.array(sorted(score_dict.items(), key=lambda x:x[1], reverse=True))[:numOfReturn, 0]
-    return df_question.loc[idxs,['question','ans']]
-
-
-# df_question['processed'] = df_question['question'].apply(preProcess)
-# df_question
-
-termIndex = list(set(all_terms))
-# print(termIndex)
-
-docLen = len(df_question)
-# docLen
-
-#計算IDF
-idfVector = []
-for term in termIndex:
-    numOfDoc = 0
-    for terms in df_question['processed']:
-        # print(terms)
-        if term in terms:
-            numOfDoc+=1
-    idf = np.log(docLen / numOfDoc)
-    idfVector.append(idf)
-
-
-
-
-df_question['vector'] = df_question['processed'].apply(terms_to_vector)
+    idxs = np.array(sorted(score_dict.items(), key=lambda x:x[1], reverse=True))[:numOfReturn]
+    ans = df_qa.loc[idxs[:,0],['question','ans']]
+    ans['similarity'] = idxs[:,1]
+    return ans
 
 
 #%%
-query = u'請問要申請程式該怎麼做?'
-# query = input('您的問題是?')
-lookup(query)
-
-
+# df_qa = dUtil.load_raw_df()
+# preProcess(df_qa)
+# ans = lookup(u'請問要申請WDAMS107可以找誰?')
+# for idx,ans in enumerate(ans.values):
+#     print("第{id}名: ".format(id=(idx+1)),ans[0])
+#     print('相似度: ',ans[2])
+#     # print('答案: ',ans[1])
+#     print("----------------------------")
 
 def main():
 	while True:
             print('請輸入您的問題:')
             try:
-                query = input()
-                # print('請輸入您的問題:')
-                print('問題是: ',query)
-                print("----------------------------")
+                question = input()
+                print('問題是: ',sentence_to_words(question))
+                for idx,ans in enumerate(lookup(question).values):
+                    print("第{id}名: ".format(id=(idx+1)),ans[0])
+                    print('相似度: ',ans[2])
+                    # print('答案: ',ans[1])
+                    print("----------------------------")
             except Exception as e:
                 print(repr(e))
 
-
 if __name__ == "__main__":
-	main()
+    df_qa = dUtil.load_raw_df()
+    preProcess(df_qa)
+    main()
