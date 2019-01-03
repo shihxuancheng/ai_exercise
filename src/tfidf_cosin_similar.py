@@ -9,17 +9,18 @@ import numpy as np
 import pandas as pd
 from numpy.linalg import norm
 from collections import Counter
-
+df_qa = None
 
 all_terms = []
 idfVector = []
 
 #資料預處理
-def preProcess(df_qa):
-    global all_terms, idfVector
+def preProcess():
+    global all_terms, idfVector,df_qa
     all_terms.clear()
     idfVector.clear()
 
+    df_qa = dUtil.load_raw_df()
     df_qa['processed'] = df_qa['question'].apply(sentence_to_words)
 
     for words in df_qa['processed']:     
@@ -38,6 +39,8 @@ def preProcess(df_qa):
         idfVector.append(idf)
 
     df_qa['vector'] = df_qa['processed'].apply(terms_to_vector)
+
+    return df_qa
     
 #句詞轉換    
 def sentence_to_words(sentence):
@@ -72,12 +75,20 @@ def lookup(sentence,numOfReturn=5):
     idxs = np.array(sorted(score_dict.items(), key=lambda x:x[1], reverse=True))[:numOfReturn]
     ans = df_qa.loc[idxs[:,0],['question','ans']]
     ans['similarity'] = idxs[:,1]
-    return ans
+    
+    if (len(ans) > 0) and (ans.values[0][2] > 0):
+        for idx,an in enumerate(ans.values):
+            print("相似第{id}名: ".format(id=(idx+1)),an[0])
+            print('相似度: ',an[2])
+            # print('答案: ',an[1])
+            print("----------------------------")    
+    else:
+        print('抱歉! 沒有相似的答案')
+    # return ans
 
 
 #%%
-# df_qa = dUtil.load_raw_df()
-# preProcess(df_qa)
+# preProcess()
 # ans = lookup(u'請問要申請WDAMS107可以找誰?')
 # for idx,ans in enumerate(ans.values):
 #     print("第{id}名: ".format(id=(idx+1)),ans[0])
@@ -85,21 +96,17 @@ def lookup(sentence,numOfReturn=5):
 #     # print('答案: ',ans[1])
 #     print("----------------------------")
 
+#%%
 def main():
-	while True:
-            print('請輸入您的問題:')
-            try:
-                question = input()
-                print('問題是: ',sentence_to_words(question))
-                for idx,ans in enumerate(lookup(question).values):
-                    print("第{id}名: ".format(id=(idx+1)),ans[0])
-                    print('相似度: ',ans[2])
-                    # print('答案: ',ans[1])
-                    print("----------------------------")
-            except Exception as e:
-                print(repr(e))
+    preProcess()
+    while True:
+        print('請輸入您的問題:')
+        try:
+            question = input()
+            print('問題是: ',dUtil.cut_sentence(question,cut_all=False))
+            lookup(question)
+        except Exception as e:
+            print(repr(e))
 
-if __name__ == "__main__":
-    df_qa = dUtil.load_raw_df()
-    preProcess(df_qa)
+if __name__ == '__main__':
     main()

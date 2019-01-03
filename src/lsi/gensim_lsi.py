@@ -50,20 +50,20 @@ for text in texts:
         feq[token] += 1
 texts = [[token for token in text if feq[token] > 1] for text in texts]
 
-dict.save('row_data.dict')
+dict.save('data/raw_data.dict')
 # print(dict)
 
 # for word,index in dict.token2id.items():
 #     print(word + 'id: ' + str(index))
 
 corpus = [dict.doc2bow(text) for text in texts]
-corpora.MmCorpus.serialize('row_data.mm',corpus)
+corpora.MmCorpus.serialize('data/raw_data.mm',corpus)
 
 #%%
 #載入語料庫
-if(os.path.exists('row_data.dict')):
-    dict = corpora.Dictionary.load('row_data.dict')
-    corpus = corpora.MmCorpus('row_data.mm')
+if(os.path.exists('data/raw_data.dict')):
+    dict = corpora.Dictionary.load('data/raw_data.dict')
+    corpus = corpora.MmCorpus('data/raw_data.mm')
 else:
     print("No Files!!!")
 
@@ -74,15 +74,15 @@ corpus_tfidf
 
 lsi = models.LsiModel(corpus_tfidf,id2word=dict,num_topics=50)
 corpus_lsi = lsi[corpus_tfidf]
-lsi.save('row_data.lsi')
-corpora.MmCorpus.serialize('row_data_lsi.mm',corpus_lsi)
+lsi.save('data/raw_data.lsi')
+corpora.MmCorpus.serialize('data/raw_data_lsi.mm',corpus_lsi)
 print('LSI topics:')
 lsi.print_topics(50)
 
 
 #問題相似性計算
 #%%
-# dict = corpora.Dictionary.load('row_data.dict')
+# dict = corpora.Dictionary.load('raw_data.dict')
 question = '請問要申請WDAMS107可以找誰?'
 vec_bow = dict.doc2bow([x for x in jieba.cut(question,cut_all=False)])
 print(vec_bow)
@@ -91,7 +91,7 @@ vec_lsi = lsi[vec_bow]
 # print(vec_lsi)
 
 index = similarities.MatrixSimilarity(lsi[corpus])
-index.save('row_data.index')
+index.save('data/raw_data.index')
 
 sims = index[vec_lsi]
 sims = sorted(enumerate(sims), key=lambda item: -item[1])
