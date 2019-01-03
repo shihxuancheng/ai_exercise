@@ -3,12 +3,17 @@ import pandas as pd
 import sys
 from gensim import corpora
 from collections import defaultdict
+import os
 from os.path import abspath, join, dirname
 sys.path.insert(0, join(abspath(dirname(".")), ''))
 
-def jieba_init():
+def init():
     jieba.set_dictionary('resources/dict.txt.big')
     print('jieba dict assigned!')
+
+    path = './data'
+    if not os.path.isdir(path):
+        os.mkdir(path)
 
 
 #載入raw data並轉換為DataFrame
@@ -60,7 +65,6 @@ def load_corpora(corps_path):
 #建立字典檔
 def build_dictionary(contents, dicsavepath, stoplist = []):    
     dict = corpora.Dictionary(contents)
-    print(dict)
     stop_ids = [dict.token2id[stopword] for stopword in stoplist if stopword in dict.token2id]
     # print('stop id len',len(stop_ids)
     dict.filter_tokens(stop_ids)
@@ -73,7 +77,6 @@ def load_dictionary(dicsavepath):
     dict = corpora.Dictionary.load(dicsavepath)    
     return dict 
 
-jieba_init()
-
+init()
 if __name__ == '__main__':
-    jieba_init()
+    init()

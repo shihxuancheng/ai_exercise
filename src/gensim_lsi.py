@@ -17,7 +17,7 @@ index_lsi_path ='data/raw_data.lsi.index'
 df_qa = None
 
 def preProcess():
-    global questions,df_qa
+    global df_qa
     df_qa = dUtil.load_raw_df()
 
     words = [dUtil.cut_sentence(sentence,cut_all=False) for sentence in df_qa['question']]
@@ -64,13 +64,13 @@ def lsi_similarity(sentence,dictionary_path=dict_path,corpora_path=corpora_path,
     sims = index_sim[vec_lsi]
     sims = sorted(enumerate(sims), key=lambda item: -item[1])
 
-    # print(sims[:5])    
+    print(sims[:5])    
     if (len(sims) > 0) and (sims[0][1] > 0):
         for id,sim in enumerate(sims[:5]):
             index = sim[0]
             distance = sim[1]
-            print('相似第{id}名: '.format(id=id+1),df_qa.loc[(index+1)]['question'])
-            print('答案: ',df_qa.loc[(index+1)]['ans'])
+            print('相似第{id}名: '.format(id=id+1),df_qa.loc[(index)]['question'])
+            print('答案: ',df_qa.loc[(index)]['ans'])
             print('相似度:', distance)
             print("----------------------------")
     else:

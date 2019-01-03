@@ -9,4 +9,5 @@
 *.vscode
 .DS_Store
 *.pyc
+data/*
 __pycache__
