@@ -80,7 +80,7 @@ def lookup(sentence,numOfReturn=5):
         for idx,an in enumerate(ans.values):
             print("相似第{id}名: ".format(id=(idx+1)),an[0])
             print('相似度: ',an[2])
-            # print('答案: ',an[1])
+            print('答案: ',an[1])
             print("----------------------------")    
     else:
         print('抱歉! 沒有相似的答案')
