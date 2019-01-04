@@ -66,7 +66,7 @@ def cosine_similarity(v1,v2):
     return np.dot(v1,v2) / (norm(v1) * norm(v2))
 
 # 比對相似性並回傳最佳答案
-def lookup(sentence,numOfReturn=5):
+def tfidf_similarity(sentence,numOfReturn=5):
     test_vec = terms_to_vector(sentence_to_words(sentence))  
     score_dict = {}
     for idx, vec in enumerate(df_qa['vector']):
@@ -89,7 +89,7 @@ def lookup(sentence,numOfReturn=5):
 
 #%%
 # preProcess()
-# ans = lookup(u'請問要申請WDAMS107可以找誰?')
+# ans = tfidf_similarity(u'請問要申請WDAMS107可以找誰?')
 # for idx,ans in enumerate(ans.values):
 #     print("第{id}名: ".format(id=(idx+1)),ans[0])
 #     print('相似度: ',ans[2])
@@ -104,7 +104,7 @@ def main():
         try:
             question = input()
             print('問題是: ',dUtil.cut_sentence(question,cut_all=False))
-            lookup(question)
+            tfidf_similarity(question)
         except Exception as e:
             print(repr(e))
 

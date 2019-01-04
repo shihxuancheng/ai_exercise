@@ -5,12 +5,12 @@
 
 1.  文本朗讀（Text to speech）/ 語音合成（Speech synthesis）
 2.  語音識別（Speech recognition）
-3.  **自動分詞（word segmentation）**
+3.  **`自動分詞（word segmentation）`**
 4.  詞性標註（Part-of-speech tagging）
 5.  句法分析（Parsing）
 6.  自然語言生成（Natural language generation）
-7.  **文本分類（Text categorization）**
-8.  **信息檢索（Information retrieval）**
+7.  **`文本分類（Text categorization）`**
+8.  **`信息檢索（Information retrieval）`**
 9.  信息抽取（Information extraction）
 10. 文字校對（Text-proofing）
 11. 問答系統（Question answering）
@@ -27,7 +27,7 @@ tf - idf 是一種統計方法，此原理為評估一個字詞對於一個檔�
 
 ![test](https://raw.githubusercontent.com/shihxuancheng/ai_exercise/master/resources/images/img-2.png)
 
-### 2. Cosine Similiarity (餘弦相似性計算)
+### 2. Cosine Similarity (餘弦相似性計算)
 餘絃相似度（cosine similarity）是資訊檢索中常用的相似度計算方式，可用來計算文件之間的相似度，
 也可以計算詞彙之間的相似度，更可以計算查詢字串與文件之間的相似度。
 

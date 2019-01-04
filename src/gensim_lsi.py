@@ -41,7 +41,7 @@ def preProcess():
 
 
 
-def lsi_similarity(sentence,dictionary_path=dict_path,corpora_path=corpora_path,tfidf_model_path=tfidf_path,lsi_model_path=lsi_path,index_path=index_lsi_path):
+def lsi_similarity(sentence,numOfReturn=5,dictionary_path=dict_path,corpora_path=corpora_path,tfidf_model_path=tfidf_path,lsi_model_path=lsi_path,index_path=index_lsi_path):
     
     dict = dUtil.load_dictionary(dict_path)
     corpus = dUtil.load_corpora(corpora_path)
@@ -64,9 +64,9 @@ def lsi_similarity(sentence,dictionary_path=dict_path,corpora_path=corpora_path,
     sims = index_sim[vec_lsi]
     sims = sorted(enumerate(sims), key=lambda item: -item[1])
 
-    print(sims[:5])    
+    print(sims[:numOfReturn])    
     if (len(sims) > 0) and (sims[0][1] > 0):
-        for id,sim in enumerate(sims[:5]):
+        for id,sim in enumerate(sims[:numOfReturn]):
             index = sim[0]
             distance = sim[1]
             print('相似第{id}名: '.format(id=id+1),df_qa.loc[(index)]['question'])
