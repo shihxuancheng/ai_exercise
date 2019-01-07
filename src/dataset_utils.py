@@ -37,9 +37,9 @@ def get_stop_words(path='resources/stops.txt'):
 def cut_sentence(sentence,cut_all=False,stop_word=True):
     if stop_word == True:
         stopList = get_stop_words()
-        wordList = [word for word in jieba.cut(sentence,cut_all=cut_all) if word not in stopList]
+        wordList = [word.lower() for word in jieba.cut(sentence,cut_all=cut_all) if word not in stopList]
     else:
-        wordList = [word for word in jieba.cut(cut_all=cut_all)]
+        wordList = [word.lower() for word in jieba.cut(cut_all=cut_all)]
 
     return wordList
 

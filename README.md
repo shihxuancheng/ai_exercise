@@ -20,9 +20,12 @@
 
 ## 基本概念
 
-### 詞句轉換為向量
+### 1. 將詞句轉換為向量
 
-#### 將句子轉換為向量(Bag of Words, BOW)
+* 基於統計原理，如 TFIDF、LSI、LDA...，以詞袋 (Bag Of Word, BOW)形式表現
+* 基於深度學習，如word2vec、doc2vec， 以詞向量 Word Embedding)形式表現
+
+舉例
 
     句子1:  我喜歡AI，不喜歡BI
     句子2:  我不喜歡AI，也不喜歡BI
@@ -32,7 +35,7 @@
     句子1:  我 / 喜歡 / AI / 不 / 喜歡 / BI
     句子2:  我 / 不 / 喜歡 / AI / 也 / 不 ／ 喜歡 / BI
 
-第二步 列出所有詞，計算詞頻
+第二步 列出所有詞
 
     我，喜歡，不，AI，BI，也
 
@@ -43,10 +46,12 @@
 |句子1|1|2|1|1|1|0|
 |句子2|1|2|2|1|1|1|
 
+句子1: [1, 2, 1, 1, 1, 0], 句子2: [1, 2, 2, 1, 1, 1]
 
 
+***
 
-### 1. TF - IDF 計算法 ( term frequency–inverse document frequency )
+### 2. TF - IDF 計算法 ( term frequency–inverse document frequency )
 tf - idf 是一種統計方法，此原理為評估一個字詞對於一個檔案集，或一個語料庫中的其中一份檔案的重要程度，這個概念十分重要。
 
 #### TF (term frequency) - 詞頻，代表某個詞在文章中出現的頻率
@@ -65,7 +70,7 @@ tf - idf 是一種統計方法，此原理為評估一個字詞對於一個檔�
 ## Solutions
 ### `1. TF-IDF + Cosine similar`
 #### 基本思路
-1.  預處理: 語料庫中所有問題進行中文分詞，去除重複、停用字及低詞頻雜訊
+1.  資料預處理: 語料庫中所有問題進行中文分詞，去除重複、停用字及低詞頻雜訊
 2.  所有分詞結果整理成一個集合並計算IDF
 2.  將每個問題轉換為向量(bow)並計算TFIDF
 3.  將user提出的問題轉換為向量(bow)並計算TFIDF
@@ -73,9 +78,9 @@ tf - idf 是一種統計方法，此原理為評估一個字詞對於一個檔�
 
 *** 
 
-### `2. LSI/LDA Model`
+### `3. LSI/LDA Model`
 #### 基本思路
-1.  預處理: 語料庫中所有問題進行中文分詞，去除重複、停用字及低詞頻雜訊
+1.  資料預處理: 語料庫中所有問題進行中文分詞，去除重複、停用字及低詞頻雜訊
 2.  分詞結果整理成一個集合並轉換為字典檔 (word -> id)
 3.  透過字典檔將語料庫轉換為向量格式
 4.  將語料庫轉換為**TFIDF model**
@@ -85,7 +90,7 @@ tf - idf 是一種統計方法，此原理為評估一個字詞對於一個檔�
 
 ### 何謂LSI 模型 
 #### [LSI (Latent Semantic Indexing) - 潛在語義索引](https://raymondyangsite.wordpress.com/2017/05/03/110/)
-是利用 [SVD ( Singular Value Decomposition )](https://www.zhihu.com/question/22237507)把文件從高維空間投影到低維空間，在這個空間內進行文本相似性的比較。與詞組之間語意上的關聯相比， LSI 更關注的是詞組之間「隱含」的關聯
+是利用 [SVD ( Singular Value Decomposition )](https://www.zhihu.com/question/22237507)把文件從高維空間投影到低維空間(topics)，在這個空間內進行文本相似性的比較。與詞組之間語意上的關聯相比， LSI 更關注的是詞組之間「隱含」的關聯
 
 
 ## 執行環境
