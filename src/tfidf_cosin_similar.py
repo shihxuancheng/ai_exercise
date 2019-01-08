@@ -66,7 +66,7 @@ def cosine_similarity(v1,v2):
     return np.dot(v1,v2) / (norm(v1) * norm(v2))
 
 # 比對相似性並回傳最佳答案
-def tfidf_similarity(sentence,numOfReturn=5):
+def tfidf_similarity(sentence,numOfReturn=5,threshold=0.0):
     test_vec = terms_to_vector(sentence_to_words(sentence))  
     score_dict = {}
     for idx, vec in enumerate(df_qa['vector']):
@@ -75,15 +75,16 @@ def tfidf_similarity(sentence,numOfReturn=5):
     idxs = np.array(sorted(score_dict.items(), key=lambda x:x[1], reverse=True))[:numOfReturn]
     ans = df_qa.loc[idxs[:,0],['question','ans']]
     ans['similarity'] = idxs[:,1]
+    ans = list(filter(lambda x:x[2]>=threshold,ans.values.tolist()))
     
-    if (len(ans) > 0) and (ans.values[0][2] > 0):
-        for idx,an in enumerate(ans.values):
+    if len(ans) > 0:
+        for idx,an in enumerate(ans):
             print("相似第{id}名: ".format(id=(idx+1)),an[0])
             print('相似度: ',an[2])
             print('答案: ',an[1])
             print("----------------------------")    
     else:
-        print('抱歉! 沒有相似的答案')
+        print('抱歉! 沒有相似的答案，請改以別種方式詢問，或許我們能提供更精確的答案!')
     # return ans
 
 

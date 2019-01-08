@@ -41,7 +41,7 @@ def preProcess():
 
 
 
-def lsi_similarity(sentence,numOfReturn=5,dictionary_path=dict_path,corpora_path=corpora_path,tfidf_model_path=tfidf_path,lsi_model_path=lsi_path,index_path=index_lsi_path):
+def lsi_similarity(sentence,numOfReturn=5,threshold=0.0,dictionary_path=dict_path,corpora_path=corpora_path,tfidf_model_path=tfidf_path,lsi_model_path=lsi_path,index_path=index_lsi_path):
     
     dict = dUtil.load_dictionary(dict_path)
     corpus = dUtil.load_corpora(corpora_path)
@@ -63,9 +63,9 @@ def lsi_similarity(sentence,numOfReturn=5,dictionary_path=dict_path,corpora_path
     vec_lsi = lsimodel[vec_bow]
     sims = index_sim[vec_lsi]
     sims = sorted(enumerate(sims), key=lambda item: -item[1])
-
-    print(sims[:numOfReturn])    
-    if (len(sims) > 0) and (sims[0][1] > 0):
+    sims = list(filter(lambda x:x[1] >= threshold,sims))
+    print(sims)    
+    if len(sims) > 0:
         for id,sim in enumerate(sims[:numOfReturn]):
             index = sim[0]
             distance = sim[1]
@@ -74,7 +74,7 @@ def lsi_similarity(sentence,numOfReturn=5,dictionary_path=dict_path,corpora_path
             print('相似度:', distance)
             print("----------------------------")
     else:
-        print('抱歉! 沒有相似的答案')
+        print('抱歉! 沒有相似的答案，請改以別種方式詢問，或許我們能提供更精確的答案!')
 #%%
 # question = u'請問要申請WDAMS107可以找誰?'
 # preProcess()
@@ -88,7 +88,7 @@ def main():
         try:
             question = input()
             print('問題是: ',dUtil.cut_sentence(question,cut_all=False))
-            lsi_similarity(question)
+            lsi_similarity(question,threshold=0.6)
         except Exception as e:
             print(repr(e))
         
